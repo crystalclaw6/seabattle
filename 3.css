@@ -1,7 +1,7 @@
 .field{
     float:left;
-	width: 400px;
-	height: 400px;
+	width: 440px;
+	height: 440px;
 	margin: 0 auto;
 	background: url('image/grid.png');
 	background-size: cover;
@@ -18,4 +18,18 @@
     transform: translate(-50%, -50%);
     text-align:center;
     display: flex;
+}
+.ship{
+    width: 40px;
+	height: 40px;
+    background: url('image/ships.png');
+	position: relative;
+	left: 40px;
+	top: 40px;
+}
+.ship1{
+    width: 120px;
+    height: 40px;
+	position: absolute;
+    background-position: -200px 0px;
 }
