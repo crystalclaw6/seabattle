@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="3.css" />
+</head>
+
+<body>
+
+    <div class="box">
+        <div id="human_field" class="field"></div>
+        <div id="computer_field" class="field"></div>
+        <script>
+            const FIELD_SIZE = 10;
+            class Field {
+                alphabet = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"];
+                ships = [];
+                constructor() {
+
+                }
+                generateShips() {
+                    for(let i = 1; i < 5; i++){
+                        for (let j = i; j < 5-j; j++){
+                            ship = new Ship();
+                        }
+                    }
+                }
+            }
+            class Ship {
+                row;
+                col;
+                size = 3;
+                coordinate = [];
+                constructor() {
+                    var direction = Math.random() * 2;
+                    if (direction === 1) {
+                        row = Math.random() * (FIELD_SIZE - size);
+                        col = Math.random() * FIELD_SIZE;
+                    } else {
+                        col = Math.random() * (FIELD_SIZE - size);
+                        row = Math.random() * FIELD_SIZE;
+                    }
+                    for (let i = 0; i < size; i++) {
+                        if (direction === 1) coordinate.push(row + i, col);
+                        else coordinate.push(row, col + i);
+                    }
+                }
+            }
+
+        </script>
+    </div>
+</body>
+
+</html>
