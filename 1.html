@@ -11,52 +11,68 @@
 
     <div class="box">
         <div id="human_field" class="field">
-            <div class="ship ship1"></div>
         </div>
         <div id="computer_field" class="field"></div>
         <script>
+
+
             const FIELD_SIZE = 10;
             class Field {
                 alphabet = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"];
                 ships = [];
-                direction;
                 constructor() {
 
                 }
                 generateShips() {
                     for (let i = 1; i < 5; i++) {
-                        for (let j = i; j < 5 - j; j++) {
-                            ship = new Ship();
+                        for (let j = 1; j <= 5 - i; j++) {
+                            var ship = new Ship(i);
+                            ship.showShip();
                         }
                     }
                 }
             }
             class Ship {
+                name;
                 row;
                 col;
-                size = 3;
+                size;
+                direction;
                 coordinate = [];
-                constructor() {
-                    direction = Math.random() * 2;
-                    if (direction === 1) {
-                        row = Math.random() * (FIELD_SIZE - size);
-                        col = Math.random() * FIELD_SIZE;
+                constructor(size) {
+                    this.size = size;
+
+                    this.direction = Math.floor(Math.random() * 2);
+                    if (this.direction === 1) {
+                        this.col = Math.floor(Math.random() * (FIELD_SIZE - this.size));
+                        this.row = Math.floor(Math.random() * FIELD_SIZE);
+
                     } else {
-                        col = Math.random() * (FIELD_SIZE - size);
-                        row = Math.random() * FIELD_SIZE;
+                        this.row = Math.floor(Math.random() * (FIELD_SIZE - this.size));
+                        this.col = Math.floor(Math.random() * FIELD_SIZE);
                     }
                     for (let i = 0; i < size; i++) {
-                        if (direction === 1) coordinate.push(row + i, col);
-                        else coordinate.push(row, col + i);
+                        if (this.direction === 1) this.coordinate.push(this.row + i, this.col);
+                        else this.coordinate.push(this.row, this.col + i);
                     }
                 }
-                static showShip() {
-                    const humanfield = getElement('field_human');
+                showShip() {
                     const div = document.createElement('div');
+                    const dir = (this.direction == 1) ? ' vertical' : '';
+                    // собираем в одну строку все классы
 
+                    div.className = `ship deck` + this.size + dir;
+                    // через атрибут 'style' задаём позиционирование кораблю относительно
+                    // его родительского элемента
+                    // смещение вычисляется путём умножения координаты первой палубы на
+                    // размер клетки игрового поля, этот размер совпадает с размером палубы
+                    div.style.cssText = `left:${(this.row+1) * 40}px; top:${(this.col+1) * 40}px;`;
+                    document.getElementById('human_field').appendChild(div);
                 }
             }
 
+            test = new Field();
+            test.generateShips();
         </script>
     </div>
 </body>
