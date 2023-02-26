@@ -23,10 +23,7 @@
             function createElement(name, x, y, field) {
                 const div = document.createElement('div');
                 div.className = name;
-                console.log(x, y);
                 div.style.cssText = `left:${(x + 1) * 40}px; top:${(y + 1) * 40}px;position: fixed;`;
-                console.log(div.style.cssText);
-                console.log(div.className);
                 document.getElementById(field).appendChild(div);
             }
             class Field {
@@ -42,21 +39,30 @@
                     }
                 }
                 generateShips() {
-                    for (let i = 1; i < 5; i++) {
+                    for (let i = 4; i > 0; i--) {
                         for (let j = 1; j <= 5 - i; j++) {
                             let isCorrect = true;
                             do {
+                                isCorrect = true;
                                 var ship = new Ship(i);
-                                this.ships.forEach(function(item) {
+                                for (let k = 0; k < this.ships.length; k++) {
+                                    if (this.ships[k].isConnectTo(ship)) {
+                                        isCorrect = false;
+                                        break;
+                                    }
+                                }
+
+                                /*this.ships.forEach(function(item) {
                                     console.log(item.isConnectTo(ship));
                                     if (item.isConnectTo(ship)) {
                                         isCorrect = false;
                                         //break
                                     }
-                                });
+                                });*/
 
                             } while (isCorrect === false);
                             this.ships.push(ship);
+                            console.log("good");
                         }
                     }
                 }
@@ -70,7 +76,6 @@
                     let row = Number(cell.charAt(1)) - 1;
 
                     if (this.field[row][col] === 1) return;
-                    console.log(col, row);
                     this.field[row, col] = 1;
                     for (let i = 0; i < this.ships.length; i++) {
                         if (this.ships[i].isHit(row, col)) {
@@ -81,11 +86,14 @@
                             return;
                         }
                     }
-                    console.log("hi");
                     createElement('dot', col, row, 'human_field');
                 }
             }
 
+            function replace(coord, value) {
+                if (coord[0] < 0 || coord[0] > 9) coord[0] = value;
+                if (coord[1] < 0 || coord[1] > 9) coord[1] = value;
+            }
             class Ship {
                 hits = 0;
                 name;
@@ -93,6 +101,8 @@
                 col;
                 size;
                 direction;
+                startCoord;
+                finishCoord;
                 coordinate = [];
                 constructor(size) {
                     this.size = size;
@@ -110,6 +120,12 @@
                         if (this.direction === 1) this.coordinate.push([this.row, this.col + i]);
                         else this.coordinate.push([this.row + i, this.col]);
                     }
+                    this.startCoord = [this.row - 1, this.col - 1];
+                    replace(this.startCoord, 0);
+                    if (this.direction === 1) this.finishCoord = [this.row + 1, this.col + size];
+                    else this.finishCoord = [this.row + size, this.col + 1];
+                    replace(this.finishCoord, 9);
+
                 }
                 showShip() {
                     const dir = (this.direction == 1) ? '' : ' vertical';
@@ -130,7 +146,8 @@
                     return false;
                 }
                 isConnectTo(ship) {
-
+                    if (Math.abs(this.startCoord[0] - ship.startCoord[0]) > 1 && Math.abs(ship.finishCoord[0] - this.finishCoord[0]) > 1 || (Math.abs(this.startCoord[1] - ship.startCoord[1]) > 1 && Math.abs(ship.finishCoord[1] - this.finishCoord[1]) > 1)) return false;
+                    return true;
                 }
             }
             var test = new Field();
@@ -144,12 +161,9 @@
             }
 
             function makeHit() {
-                console.log("workim");
                 var text = document.search.place.value.trim();
-                console.log(text);
                 test.hit(text);
             }
-
         </script>
     </div>
     <form name="search" style="
@@ -166,6 +180,4 @@
         <input type="button" name="hit" value="Выстрелить" style="width: 90px; margin-left:7px;" onclick="makeHit();" />
         <input type="button" name="start" value="Начать игру" style="width: 90px; margin-left:7px;" onclick="startGame();" />
     </form>
-</body>
-
-</html>
+</body></html>
