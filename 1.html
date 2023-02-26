@@ -12,7 +12,6 @@
     <div class="box">
         <div id="human_field" class="field"></div>
         <div id="computer_field" class="field"></div>
-
         <script>
             const FIELD_SIZE = 10;
 
@@ -24,7 +23,10 @@
             function createElement(name, x, y, field) {
                 const div = document.createElement('div');
                 div.className = name;
-                div.style.cssText = `left:${(x + 1) * 40}px; top:${(y + 1) * 40}px;`;
+                console.log(x, y);
+                div.style.cssText = `left:${(x + 1) * 40}px; top:${(y + 1) * 40}px;position: fixed;`;
+                console.log(div.style.cssText);
+                console.log(div.className);
                 document.getElementById(field).appendChild(div);
             }
             class Field {
@@ -63,8 +65,12 @@
                         item.showShip();
                     });
                 }
-                hit(row, col) {
-                    if (this.field[row, col] === 1) return;
+                hit(cell) {
+                    let col = this.alphabet.indexOf(cell.charAt(0));
+                    let row = Number(cell.charAt(1)) - 1;
+
+                    if (this.field[row][col] === 1) return;
+                    console.log(col, row);
                     this.field[row, col] = 1;
                     for (let i = 0; i < this.ships.length; i++) {
                         if (this.ships[i].isHit(row, col)) {
@@ -75,9 +81,11 @@
                             return;
                         }
                     }
+                    console.log("hi");
                     createElement('dot', col, row, 'human_field');
                 }
             }
+
             class Ship {
                 hits = 0;
                 name;
@@ -125,15 +133,39 @@
 
                 }
             }
+            var test = new Field();
 
-            test = new Field();
-            test.generateShips();
-            test.showShips();
-            test.hit(3, 3);
+            function startGame() {
+
+                test.generateShips();
+                test.showShips();
+                test.hit("А1");
+                test.hit("А2");
+            }
+
+            function makeHit() {
+                console.log("workim");
+                var text = document.search.place.value.trim();
+                console.log(text);
+                test.hit(text);
+            }
 
         </script>
     </div>
-
+    <form name="search" style="
+    overflow: hidden;
+    position: fixed;
+    top: 85%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;">
+        <input type="text" name="place" placeholder="Введите ячейку (пример: А1)" style="width:180px;" />
+        <input type="button" name="hit" value="Выстрелить" style="width: 90px; margin-left:7px;" onclick="makeHit();" />
+        <input type="button" name="start" value="Начать игру" style="width: 90px; margin-left:7px;" onclick="startGame();" />
+    </form>
 </body>
 
 </html>
