@@ -10,29 +10,76 @@
 <body>
 
     <div class="box">
-        <div id="human_field" class="field">
-        </div>
+        <div id="human_field" class="field"></div>
         <div id="computer_field" class="field"></div>
+
         <script>
-
-
             const FIELD_SIZE = 10;
+
+            function deepEqual([x1, y1], [x2, y2]) {
+                if (x1 === x2 && y1 === y2) return true;
+                return false;
+            }
+
+            function createElement(name, x, y, field) {
+                const div = document.createElement('div');
+                div.className = name;
+                div.style.cssText = `left:${(x + 1) * 40}px; top:${(y + 1) * 40}px;`;
+                document.getElementById(field).appendChild(div);
+            }
             class Field {
                 alphabet = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"];
                 ships = [];
+                field = [];
                 constructor() {
-
+                    for (let row = 0; row < FIELD_SIZE; row++) {
+                        this.field[row] = [];
+                        for (let col = 0; col < FIELD_SIZE; col++) {
+                            this.field[row][col] = 0;
+                        }
+                    }
                 }
                 generateShips() {
                     for (let i = 1; i < 5; i++) {
                         for (let j = 1; j <= 5 - i; j++) {
-                            var ship = new Ship(i);
-                            ship.showShip();
+                            let isCorrect = true;
+                            do {
+                                var ship = new Ship(i);
+                                this.ships.forEach(function(item) {
+                                    console.log(item.isConnectTo(ship));
+                                    if (item.isConnectTo(ship)) {
+                                        isCorrect = false;
+                                        //break
+                                    }
+                                });
+
+                            } while (isCorrect === false);
+                            this.ships.push(ship);
                         }
                     }
                 }
+                showShips() {
+                    this.ships.forEach(function(item) {
+                        item.showShip();
+                    });
+                }
+                hit(row, col) {
+                    if (this.field[row, col] === 1) return;
+                    this.field[row, col] = 1;
+                    for (let i = 0; i < this.ships.length; i++) {
+                        if (this.ships[i].isHit(row, col)) {
+                            createElement('cross', col, row, 'human_field');
+                            if (this.ships[i].isAllHit()) {
+
+                            }
+                            return;
+                        }
+                    }
+                    createElement('dot', col, row, 'human_field');
+                }
             }
             class Ship {
+                hits = 0;
                 name;
                 row;
                 col;
@@ -52,29 +99,41 @@
                         this.col = Math.floor(Math.random() * FIELD_SIZE);
                     }
                     for (let i = 0; i < size; i++) {
-                        if (this.direction === 1) this.coordinate.push(this.row + i, this.col);
-                        else this.coordinate.push(this.row, this.col + i);
+                        if (this.direction === 1) this.coordinate.push([this.row, this.col + i]);
+                        else this.coordinate.push([this.row + i, this.col]);
                     }
                 }
                 showShip() {
-                    const div = document.createElement('div');
-                    const dir = (this.direction == 1) ? ' vertical' : '';
-                    // собираем в одну строку все классы
+                    const dir = (this.direction == 1) ? '' : ' vertical';
+                    let name = 'ship deck' + this.size + dir;
+                    createElement(name, this.col, this.row, 'human_field');
+                }
+                isHit(row, col) {
+                    for (let i = 0; i < this.size; i++) {
+                        if (deepEqual(this.coordinate[i], [row, col])) {
+                            this.hits++;
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                isAllHit() {
+                    if (this.hits === this.size) return true;
+                    return false;
+                }
+                isConnectTo(ship) {
 
-                    div.className = `ship deck` + this.size + dir;
-                    // через атрибут 'style' задаём позиционирование кораблю относительно
-                    // его родительского элемента
-                    // смещение вычисляется путём умножения координаты первой палубы на
-                    // размер клетки игрового поля, этот размер совпадает с размером палубы
-                    div.style.cssText = `left:${(this.row+1) * 40}px; top:${(this.col+1) * 40}px;`;
-                    document.getElementById('human_field').appendChild(div);
                 }
             }
 
             test = new Field();
             test.generateShips();
+            test.showShips();
+            test.hit(3, 3);
+
         </script>
     </div>
+
 </body>
 
 </html>

@@ -1,14 +1,15 @@
-.field{
-    float:left;
-	width: 440px;
-	height: 440px;
-	margin: 0 auto;
-	background: url('image/grid.png');
-	background-size: cover;
-	position:relative;
+.field {
+    float: left;
+    width: 440px;
+    height: 440px;
+    margin: 0 auto;
+    background: url('image/grid.png');
+    background-size: cover;
+    position: relative;
     margin-right: 50px;
 }
-.box{
+
+.box {
     overflow: hidden;
     position: fixed;
     top: 50%;
@@ -16,36 +17,57 @@
     -webkit-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
-    text-align:center;
+    text-align: center;
     display: flex;
 }
-.ship{
+
+.ship {
     width: 40px;
-	height: 40px;
+    height: 40px;
     background: url('image/ships.png');
-	position: relative;
+    position: relative;
 }
-.deck1{
-	position: absolute;
+
+.deck1 {
+    position: absolute;
     background-position: 0px 0px;
 }
-.deck2{
+
+.deck2 {
     width: 80px;
-	position: absolute;
+    position: absolute;
     background-position: -80px 0px;
 }
-.deck3{
+
+.deck3 {
     width: 120px;
-	position: absolute;
+    position: absolute;
 
     background-position: -200px 0px;
 }
-.deck4{
+
+.deck4 {
     width: 160px;
-	position: absolute;
+    position: absolute;
     background-position: -360px 0px;
 }
+
 .vertical {
-	transform: rotate(90deg);
-	transform-origin: 20px 20px;
+    transform: rotate(90deg);
+    transform-origin: 20px 20px;
+}
+
+.dot {
+    width: 40px;
+    height: 40px;
+    background: url('image/ships.png');
+    background-position: 0px -160px;
+    position: relative;
+}
+.cross {
+    width: 40px;
+    height: 40px;
+    background: url('image/ships.png');
+    background-position: 0px -80px;
+    position: relative;
 }
