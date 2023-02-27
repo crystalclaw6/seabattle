@@ -10,8 +10,12 @@
 <body>
 
     <div class="box">
-        <div id="human_field" class="field"></div>
-        <div id="computer_field" class="field"></div>
+        <div id="print" style="width:930px;height: 40px;position: fixed;">Добро пожаловать в Морской бой - игры на двоих !</div>
+        <div id="first_field" class="field"></div>
+        <div style="width: 100px;">
+            <input type="button" id="change" value="🗘" style="width: 40px;height:30px;margin-top:80%;display:none;" onclick="changeField();" />
+        </div>
+        <div id="second_field" class="field"></div>
         <script>
             const FIELD_SIZE = 10;
 
@@ -23,14 +27,16 @@
             function createElement(name, x, y, field) {
                 const div = document.createElement('div');
                 div.className = name;
-                div.style.cssText = `left:${(x + 1) * 40}px; top:${(y + 1) * 40}px;position: fixed;`;
+                div.style.cssText = `margin-left:${(x + 1) * 40}px; margin-top:${(y + 1) * 40}px;position: fixed;`;
                 document.getElementById(field).appendChild(div);
             }
             class Field {
+                name;
                 alphabet = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"];
                 ships = [];
                 field = [];
-                constructor() {
+                constructor(name) {
+                    this.name = name;
                     for (let row = 0; row < FIELD_SIZE; row++) {
                         this.field[row] = [];
                         for (let col = 0; col < FIELD_SIZE; col++) {
@@ -66,9 +72,15 @@
                         }
                     }
                 }
+                reset() {
+                    this.ships = [];
+                    document.getElementById(this.name).innerHTML = '';
+                }
                 showShips() {
+                    name = this.name;
+                    console.log(name);
                     this.ships.forEach(function(item) {
-                        item.showShip();
+                        item.showShip(name);
                     });
                 }
                 hit(cell) {
@@ -79,14 +91,14 @@
                     this.field[row, col] = 1;
                     for (let i = 0; i < this.ships.length; i++) {
                         if (this.ships[i].isHit(row, col)) {
-                            createElement('cross', col, row, 'human_field');
+                            createElement('cross', col, row, name);
                             if (this.ships[i].isAllHit()) {
 
                             }
                             return;
                         }
                     }
-                    createElement('dot', col, row, 'human_field');
+                    createElement('dot', col, row, name);
                 }
             }
 
@@ -127,10 +139,10 @@
                     replace(this.finishCoord, 9);
 
                 }
-                showShip() {
+                showShip(fieldName) {
                     const dir = (this.direction == 1) ? '' : ' vertical';
                     let name = 'ship deck' + this.size + dir;
-                    createElement(name, this.col, this.row, 'human_field');
+                    createElement(name, this.col, this.row, fieldName);
                 }
                 isHit(row, col) {
                     for (let i = 0; i < this.size; i++) {
@@ -146,38 +158,65 @@
                     return false;
                 }
                 isConnectTo(ship) {
-                    if (Math.abs(this.startCoord[0] - ship.startCoord[0]) > 1 && Math.abs(ship.finishCoord[0] - this.finishCoord[0]) > 1 || (Math.abs(this.startCoord[1] - ship.startCoord[1]) > 1 && Math.abs(ship.finishCoord[1] - this.finishCoord[1]) > 1)) return false;
+                    if ((Math.abs(this.startCoord[0] - ship.startCoord[0]) > 1 && Math.abs(ship.finishCoord[0] - this.finishCoord[0]) > 1 || (Math.abs(this.startCoord[1] - ship.startCoord[1]) > 1 && Math.abs(ship.finishCoord[1] - this.finishCoord[1]) > 1))) return false;
                     return true;
                 }
             }
-            var test = new Field();
+            var firstPlayer = new Field("first_field");
+            var secondPlayer = new Field("second_field");
+            var PLAYER = 1;
+            var firstClick = true;
+
+            function chooseField() {
+                if (firstClick) {
+                    console.log(1);
+                    search.start.value = "Подтвердить";
+                    document.getElementById('change').style.display = 'inline';
+                    firstPlayer.generateShips();
+                    firstPlayer.showShips();
+                    firstClick = false;
+                } else {
+                    console.log(2);
+                    PLAYER = 2;
+                    search.start.style.display = 'none';
+                    search.ready.style.display = 'inline';
+                    secondPlayer.generateShips();
+                    secondPlayer.showShips();
+                }
+            }
+
+            function changeField() {
+                let curField = (PLAYER === 1) ? firstPlayer : secondPlayer;
+                console.log(curField);
+                curField.reset();
+                curField.generateShips();
+                curField.showShips();
+            }
 
             function startGame() {
-
-                test.generateShips();
-                test.showShips();
-                test.hit("А1");
-                test.hit("А2");
+                search.ready.style.display = 'none';
             }
 
             function makeHit() {
                 var text = document.search.place.value.trim();
                 test.hit(text);
             }
+
         </script>
-    </div>
-    <form name="search" style="
-    overflow: hidden;
+        <form name="search" style="
+
     position: fixed;
-    top: 85%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    text-align: center;
-    display: flex;">
-        <input type="text" name="place" placeholder="Введите ячейку (пример: А1)" style="width:180px;" />
-        <input type="button" name="hit" value="Выстрелить" style="width: 90px; margin-left:7px;" onclick="makeHit();" />
-        <input type="button" name="start" value="Начать игру" style="width: 90px; margin-left:7px;" onclick="startGame();" />
-    </form>
-</body></html>
+    top: 68%;
+   width:930px;
+    text-align: center;">
+            <input type="button" name="start" value="Вперед" style="width: 90px;left:50%;" onclick="chooseField();" />
+            <input type="button" name="ready" value="Начать игру" style="width: 90px;top:50%;left:50%;display: none;" onclick="startGame();" />
+            <br>
+            <input type="text" name="cell" placeholder="Введите ячейку (пример: А1)" style="width:180px;display: none;" />
+            <input type="button" name="hit" value="Выстрелить" style="width: 90px; margin-left:7px;display: none;" onclick="makeHit();" />
+        </form>
+    </div>
+
+</body>
+
+</html>

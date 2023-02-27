@@ -1,18 +1,21 @@
 .field {
     float: left;
+    top: 10%;
     width: 440px;
     height: 440px;
     margin: 0 auto;
     background: url('image/grid.png');
     background-size: cover;
     position: relative;
-    margin-right: 50px;
+
 }
 
 .box {
+    width: 980px;
+    height: 800px;
     overflow: hidden;
     position: fixed;
-    top: 50%;
+    top: 60%;
     left: 50%;
     -webkit-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
