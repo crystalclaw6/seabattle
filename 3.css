@@ -24,6 +24,46 @@
     display: flex;
 }
 
+.output {
+    width: 980px;
+    height: 40px;
+    position: fixed;
+}
+
+.boxChangeBut {
+    width: 100px;
+    height: 100px;
+}
+
+.button {
+    width: 90px;
+    display: none;
+}
+
+.hit {
+    margin-left: 7px;
+}
+
+.changeBut {
+    width: 40px;
+    height: 30px;
+    margin-top: 80%;
+    display: none;
+}
+
+.input {
+    width: 180px;
+    display: none;
+}
+
+.search {
+    position: fixed;
+    top: 90%;
+    width: 980px;
+    height: 100px;
+    text-align: center;
+}
+
 .ship {
     width: 40px;
     height: 40px;
@@ -67,6 +107,7 @@
     background-position: 0px -160px;
     position: relative;
 }
+
 .cross {
     width: 40px;
     height: 40px;
