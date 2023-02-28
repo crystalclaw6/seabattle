@@ -2,7 +2,9 @@
 /*eslint-env es6*/
 /*jslint es6:true*/
 const FIELD_SIZE = 10;
+var audio;
 document.getElementById('start').style.display = 'inline';
+
 function deepEqual([x1, y1], [x2, y2]) {
     if (x1 === x2 && y1 === y2) return true;
     return false;
@@ -13,6 +15,22 @@ function createElement(name, x, y, field) {
     div.className = name;
     div.style.cssText = `margin-left:${(x + 1) * 40}px; margin-top:${(y + 1) * 40}px;position: fixed;`;
     document.getElementById(field).appendChild(div);
+}
+
+function replace(coord, value) {
+    if (coord[0] < 0 || coord[0] > 9) coord[0] = value;
+    if (coord[1] < 0 || coord[1] > 9) coord[1] = value;
+}
+
+function playAudio(path) {
+
+    audio = new Audio(path);
+    audio.play();
+}
+
+function stopAudio() {
+    audio.pause();
+    audio.currentTime = 0;
 }
 class Field {
     name;
@@ -96,7 +114,10 @@ class Field {
                 if (this.ships[i].isAllHit()) {
                     this.crushedShips++;
                     this.ships[i].show(this.name);
+                    playAudio('sound/kill.mp3');
                     this.ships[i].closeAll(this.name, this.field);
+                } else {
+                    playAudio('sound/hit.mp3');
                 }
                 return 2;
             }
@@ -110,10 +131,6 @@ class Field {
     }
 }
 
-function replace(coord, value) {
-    if (coord[0] < 0 || coord[0] > 9) coord[0] = value;
-    if (coord[1] < 0 || coord[1] > 9) coord[1] = value;
-}
 class Ship {
     hits = 0;
     name;
@@ -148,9 +165,9 @@ class Ship {
 
     }
     closeAll(fieldName, grid) {
-        if (this.direction === 1){
+        if (this.direction === 1) {
             for (let y = this.startCoord[1]; y <= this.finishCoord[1]; y++) {
-                for (let x = this.startCoord[0]; x <= this.finishCoord[0]; x++){
+                for (let x = this.startCoord[0]; x <= this.finishCoord[0]; x++) {
                     if (this.row === x) {
                         if ((this.col == this.startCoord[1] && y == this.col) || ((this.col + this.size - 1) == this.finishCoord[1] && y == this.finishCoord[1])) x++;
                         else if (y !== this.startCoord[1] && y !== this.finishCoord[1]) x++;
@@ -160,12 +177,11 @@ class Ship {
                     if (y !== this.startCoord[1] && y !== this.finishCoord[1]) x++;
                 }
             }
-        }
-        else {
+        } else {
             for (let x = this.startCoord[0]; x <= this.finishCoord[0]; x++) {
-                for (let y = this.startCoord[1]; y <= this.finishCoord[1]; y++){
+                for (let y = this.startCoord[1]; y <= this.finishCoord[1]; y++) {
                     if (this.col === y) {
-                        if ((this.row == this.startCoord[0] && x ==this.row) || ((this.row + this.size - 1) == this.finishCoord[0] && x == this.finishCoord[0])) y++;
+                        if ((this.row == this.startCoord[0] && x == this.row) || ((this.row + this.size - 1) == this.finishCoord[0] && x == this.finishCoord[0])) y++;
                         else if (x !== this.startCoord[0] && x !== this.finishCoord[0]) y++;
                     }
                     grid[x][y] = 1;
@@ -199,7 +215,6 @@ class Ship {
             if ((ship.startCoord[0] < this.finishCoord[0] && Math.abs(ship.startCoord[1] - this.startCoord[1]) < 2) || (this.startCoord[0] > ship.finishCoord[0] && Math.abs(this.startCoord[1] - ship.startCoord[1]) < 2)) return true;
             if ((ship.startCoord[1] < this.finishCoord[1] && Math.abs(ship.startCoord[0] - this.startCoord[0]) < 2) || (this.startCoord[1] > ship.finishCoord[1] && Math.abs(this.startCoord[0] - ship.startCoord[0]) < 2)) return true;
             return false;
-            //if((this.startCoord[0] - ship.finishCoord[0] !=0) && (this.finishCoord[1] - ship.startCoord[1] !=0))  return false;
         }
         return true;
     }
@@ -209,22 +224,22 @@ var secondPlayer = new Field("second_field");
 var PLAYER = 1;
 var firstClick = true;
 
+function changeChoosingPlayer(player, text, button) {
+    document.getElementById('print').textContent = `${text} выбирает поле...`;
+    document.getElementById('start').style.display = 'none';
+    document.getElementById(button).style.display = 'inline';
+    player.generateShips();
+    player.showShips();
+}
+
 function chooseField() {
     document.getElementById('change').style.display = 'inline';
     if (firstClick) {
-        document.getElementById("print").textContent = 'Игрок 1 выбирает поле...';
-        document.getElementById('start').style.display = 'none';
-        document.getElementById('success').style.display = 'inline';
-        firstPlayer.generateShips();
-        firstPlayer.showShips();
+        changeChoosingPlayer(firstPlayer, 'Игрок 1', 'success');
         firstClick = false;
     } else {
         PLAYER = 2;
-        document.getElementById('print').textContent = 'Игрок 2 выбирает поле...';
-        document.getElementById('start').style.display = 'none';
-        document.getElementById('ready').style.display = 'inline';
-        secondPlayer.generateShips();
-        secondPlayer.showShips();
+        changeChoosingPlayer(secondPlayer, 'Игрок 2', 'ready');
     }
 }
 
@@ -236,17 +251,17 @@ function changeField() {
 }
 
 function startGame() {
-    document.getElementById("second_field").innerHTML = '';
+    document.getElementById('second_field').innerHTML = '';
     document.getElementById('ready').style.display = 'none';
     document.getElementById('change').style.display = 'none';
     document.getElementById('cell').style.display = 'inline';
     document.getElementById('hit').style.display = 'inline';
-    document.getElementById('print').textContent = 'Корабли Игрока 2 выбраны! Игрок 1 стреляет...';
+    document.getElementById('print').textContent = 'Игрок 1 стреляет...';
     PLAYER = 1;
 }
 
 function emptyField() {
-    document.getElementById("first_field").innerHTML = '';
+    document.getElementById('first_field').innerHTML = '';
     document.getElementById('print').textContent = 'Корабли Игрока 1 выбраны!';
     document.getElementById('change').style.display = 'none';
     document.getElementById('start').style.display = 'inline';
@@ -254,10 +269,22 @@ function emptyField() {
 }
 
 function restart() {
-    document.getElementById("first_field").innerHTML = '';
-    document.getElementById("second_field").innerHTML = '';
+    stopAudio();
+    document.getElementById('print').textContent = 'Добро пожаловать в Морской бой - игры на двоих !';
+    document.getElementById('first_field').innerHTML = '';
+    document.getElementById('restart').style.display = 'none';
+    document.getElementById('second_field').innerHTML = '';
     document.getElementById('start').style.display = 'inline';
     firstClick = true;
+
+}
+
+function victory(player) {
+    playAudio('sound/victory.mp3');
+    document.getElementById('cell').style.display = 'none';
+    document.getElementById('hit').style.display = 'none';
+    document.getElementById('print').textContent = `Победил ${player} !`;
+    document.getElementById('restart').style.display = 'inline';
 
 }
 
@@ -269,9 +296,9 @@ function makeHit() {
             PLAYER = 2;
         }
         if (secondPlayer.isLose()) {
-            document.getElementById('cell').style.display = 'none';
-            document.getElementById('hit').style.display = 'none';
-            document.getElementById('print').textContent = 'Победил Игрок 1 !';
+            stopAudio();
+            firstPlayer.showShips();
+            victory('Игрок 1');
         }
     } else {
         if (firstPlayer.hit(text) === 1) {
@@ -279,9 +306,9 @@ function makeHit() {
             PLAYER = 1;
         }
         if (firstPlayer.isLose()) {
-            document.getElementById('cell').style.display = 'none';
-            document.getElementById('hit').style.display = 'none';
-            document.getElementById('print').textContent = 'Победил Игрок 2 !';
+            stopAudio();
+            secondPlayer.showShips();
+            victory('Игрок 2');
         }
     }
 }
