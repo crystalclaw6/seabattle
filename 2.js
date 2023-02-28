@@ -57,7 +57,6 @@ class Field {
                     var ship = new Ship(i);
                     trys++;
                     if (trys > 300) {
-                        console.log(trys);
                         this.ships = [];
                         this.generateShips();
                         return;
@@ -92,8 +91,8 @@ class Field {
             item.show(name);
         });
     }
-    hit(cell) {
-        if (cell === null || cell.length > 3) {
+    hit(x, y) {
+        /*if (cell === null || cell.length > 3) {
             alert("Неверный ввод !");
             return 0;
         }
@@ -102,7 +101,12 @@ class Field {
         if (row < 0 || row > 9 || col < 0 || col > 9) {
             alert("Неверный ввод !");
             return 0;
-        }
+        }*/
+        console.log(y);
+        console.log(y % 40);
+        let col = Math.floor(y % 40);
+        let row = Math.floor(x % 40);
+        console.log(row, col);
         if (this.field[row][col] === 1) {
             alert("В данную ячейку уже был произведен выстрел !");
             return 0;
@@ -223,6 +227,7 @@ var firstPlayer = new Field("first_field");
 var secondPlayer = new Field("second_field");
 var PLAYER = 1;
 var firstClick = true;
+var isGameStart = false;
 
 function changeChoosingPlayer(player, text, button) {
     document.getElementById('print').textContent = `${text} выбирает поле...`;
@@ -257,6 +262,7 @@ function startGame() {
     document.getElementById('cell').style.display = 'inline';
     document.getElementById('hit').style.display = 'inline';
     document.getElementById('print').textContent = 'Игрок 1 стреляет...';
+    isGameStart = true;
     PLAYER = 1;
 }
 
@@ -280,11 +286,48 @@ function restart() {
 }
 
 function victory(player) {
+    isGameStart = false;
     playAudio('sound/victory.mp3');
     document.getElementById('cell').style.display = 'none';
     document.getElementById('hit').style.display = 'none';
     document.getElementById('print').textContent = `Победил ${player} !`;
     document.getElementById('restart').style.display = 'inline';
+
+}
+
+function makehit() {
+    if (isGameStart) {
+        let curField = (PLAYER === 1) ? firstPlayer : secondPlayer;
+        let oposField = (PLAYER === 1) ? secondPlayer : firstPlayer;
+        let coord = document.getElementById(curField.name).getBoundingClientRect();
+        if (event.clientX - document.getElementById(oposField.name).getBoundingClientRect().left < 0) return;
+        console.log(event.clientX, event.clientY);
+        var x = event.clientX - coord.left;
+        var y = event.clientY - coord.top;
+        console.log(x, y);
+        if (PLAYER === 1) {
+            if (secondPlayer.hit(x, y) === 1) {
+                document.getElementById('print').textContent = 'Игрок 2 стреляет...';
+                PLAYER = 2;
+            }
+            if (secondPlayer.isLose()) {
+                stopAudio();
+                firstPlayer.showShips();
+                victory('Игрок 1');
+            }
+        } else {
+            if (firstPlayer.hit(x, y) === 1) {
+                document.getElementById('print').textContent = 'Игрок 1 стреляет...';
+                PLAYER = 1;
+            }
+            if (firstPlayer.isLose()) {
+                stopAudio();
+                secondPlayer.showShips();
+                victory('Игрок 2');
+            }
+        }
+
+    }
 
 }
 

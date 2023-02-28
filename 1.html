@@ -11,13 +11,13 @@
 
     <div class="box">
         <div id="print" class="output">Добро пожаловать в Морской бой - игры на двоих !</div>
-        <div id="first_field" class="field"></div>
+        <div id="first_field" class="field" onclick ="makehit();"></div>
         <div class="boxChangeBut">
             <input type="button" id="change" class="changeBut" value="🗘" onclick="changeField();" />
         </div>
-        <div id="second_field" class="field"></div>
+        <div id="second_field" class="field" onclick ="makehit();"></div>
 
-        <div id="search" class="search">
+        <div id="search" class="search" >
             <input type="button" id="start" value="Вперед" class = "button" onclick="chooseField();" />
             <input type="button" id="success" value="Подтвердить"class = "button" onclick="emptyField();" />
             <input type="button" id="ready" value="Начать игру" class = "button" onclick="startGame();" />
