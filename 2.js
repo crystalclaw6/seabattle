@@ -34,7 +34,6 @@ function stopAudio() {
 }
 class Field {
     name;
-    alphabet = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"];
     ships = [];
     field = [];
     crushedShips = 0;
@@ -58,8 +57,7 @@ class Field {
                     trys++;
                     if (trys > 300) {
                         this.ships = [];
-                        this.generateShips();
-                        return;
+                        return false;;
                     }
                     for (let k = 0; k < this.ships.length; k++) {
                         if (this.ships[k].isConnectTo(ship)) {
@@ -80,6 +78,7 @@ class Field {
                 this.ships.push(ship);
             }
         }
+        return true;
     }
     reset() {
         this.ships = [];
@@ -92,21 +91,9 @@ class Field {
         });
     }
     hit(x, y) {
-        /*if (cell === null || cell.length > 3) {
-            alert("Неверный ввод !");
-            return 0;
-        }
-        let col = this.alphabet.indexOf(cell.charAt(0));
-        let row = Number(cell.match(/\d+/)[0]) - 1;
-        if (row < 0 || row > 9 || col < 0 || col > 9) {
-            alert("Неверный ввод !");
-            return 0;
-        }*/
-        console.log(y);
-        console.log(y % 40);
-        let col = Math.floor(y % 40);
-        let row = Math.floor(x % 40);
-        console.log(row, col);
+        let col = Math.floor(x / 40) - 1;
+        let row = Math.floor(y / 40) - 1;
+        if (col < 0 || row < 0) return;
         if (this.field[row][col] === 1) {
             alert("В данную ячейку уже был произведен выстрел !");
             return 0;
@@ -147,7 +134,6 @@ class Ship {
     coordinate = [];
     constructor(size) {
         this.size = size;
-
         this.direction = Math.floor(Math.random() * 2);
         if (this.direction === 1) {
             this.col = Math.floor(Math.random() * (FIELD_SIZE - this.size + 1));
@@ -176,6 +162,7 @@ class Ship {
                         if ((this.col == this.startCoord[1] && y == this.col) || ((this.col + this.size - 1) == this.finishCoord[1] && y == this.finishCoord[1])) x++;
                         else if (y !== this.startCoord[1] && y !== this.finishCoord[1]) x++;
                     }
+                    if (x > FIELD_SIZE - 1) continue;
                     grid[x][y] = 1;
                     createElement('dot', y, x, fieldName);
                     if (y !== this.startCoord[1] && y !== this.finishCoord[1]) x++;
@@ -188,6 +175,7 @@ class Ship {
                         if ((this.row == this.startCoord[0] && x == this.row) || ((this.row + this.size - 1) == this.finishCoord[0] && x == this.finishCoord[0])) y++;
                         else if (x !== this.startCoord[0] && x !== this.finishCoord[0]) y++;
                     }
+                    if (y > FIELD_SIZE - 1) continue;
                     grid[x][y] = 1;
                     createElement('dot', y, x, fieldName);
                     if (x !== this.startCoord[0] && x !== this.finishCoord[0]) y++;
@@ -233,7 +221,7 @@ function changeChoosingPlayer(player, text, button) {
     document.getElementById('print').textContent = `${text} выбирает поле...`;
     document.getElementById('start').style.display = 'none';
     document.getElementById(button).style.display = 'inline';
-    player.generateShips();
+    while(!player.generateShips()) player.generateShips();
     player.showShips();
 }
 
@@ -251,7 +239,7 @@ function chooseField() {
 function changeField() {
     let curField = (PLAYER === 1) ? firstPlayer : secondPlayer;
     curField.reset();
-    curField.generateShips();
+    while(!curField.generateShips()) curField.generateShips();
     curField.showShips();
 }
 
@@ -259,8 +247,6 @@ function startGame() {
     document.getElementById('second_field').innerHTML = '';
     document.getElementById('ready').style.display = 'none';
     document.getElementById('change').style.display = 'none';
-    document.getElementById('cell').style.display = 'inline';
-    document.getElementById('hit').style.display = 'inline';
     document.getElementById('print').textContent = 'Игрок 1 стреляет...';
     isGameStart = true;
     PLAYER = 1;
@@ -288,25 +274,21 @@ function restart() {
 function victory(player) {
     isGameStart = false;
     playAudio('sound/victory.mp3');
-    document.getElementById('cell').style.display = 'none';
-    document.getElementById('hit').style.display = 'none';
     document.getElementById('print').textContent = `Победил ${player} !`;
     document.getElementById('restart').style.display = 'inline';
 
 }
 
-function makehit() {
+function makeHit() {
     if (isGameStart) {
         let curField = (PLAYER === 1) ? firstPlayer : secondPlayer;
         let oposField = (PLAYER === 1) ? secondPlayer : firstPlayer;
-        let coord = document.getElementById(curField.name).getBoundingClientRect();
-        if (event.clientX - document.getElementById(oposField.name).getBoundingClientRect().left < 0) return;
-        console.log(event.clientX, event.clientY);
-        var x = event.clientX - coord.left;
-        var y = event.clientY - coord.top;
-        console.log(x, y);
+        let coord = document.getElementById(oposField.name).getBoundingClientRect();
+        if (!(event.clientX > coord.left && event.clientX < coord.right)) return;
+        let xOnField = event.clientX - coord.left;
+        let yOnField = event.clientY - coord.top;
         if (PLAYER === 1) {
-            if (secondPlayer.hit(x, y) === 1) {
+            if (secondPlayer.hit(xOnField, yOnField) === 1) {
                 document.getElementById('print').textContent = 'Игрок 2 стреляет...';
                 PLAYER = 2;
             }
@@ -316,7 +298,7 @@ function makehit() {
                 victory('Игрок 1');
             }
         } else {
-            if (firstPlayer.hit(x, y) === 1) {
+            if (firstPlayer.hit(xOnField, yOnField) === 1) {
                 document.getElementById('print').textContent = 'Игрок 1 стреляет...';
                 PLAYER = 1;
             }
@@ -331,27 +313,3 @@ function makehit() {
 
 }
 
-function makeHit() {
-    var text = document.getElementById('cell').value.trim();
-    if (PLAYER === 1) {
-        if (secondPlayer.hit(text) === 1) {
-            document.getElementById('print').textContent = 'Игрок 2 стреляет...';
-            PLAYER = 2;
-        }
-        if (secondPlayer.isLose()) {
-            stopAudio();
-            firstPlayer.showShips();
-            victory('Игрок 1');
-        }
-    } else {
-        if (firstPlayer.hit(text) === 1) {
-            document.getElementById('print').textContent = 'Игрок 1 стреляет...';
-            PLAYER = 1;
-        }
-        if (firstPlayer.isLose()) {
-            stopAudio();
-            secondPlayer.showShips();
-            victory('Игрок 2');
-        }
-    }
-}

@@ -1,6 +1,10 @@
+@font-face {
+    font-family: Caviar_Dreams; /* Гарнитура шрифта */
+    src: url(css/Caviar_Dreams.ttf); /* Путь к файлу со шрифтом */
+   }
 .field {
     float: left;
-    top: 10%;
+    top: 15%;
     width: 440px;
     height: 440px;
     margin: 0 auto;
@@ -9,10 +13,15 @@
     position: relative;
 
 }
-
+.one {
+    left: 30px;
+}
+.two{
+    right: 30px;
+}
 .box {
-    width: 980px;
-    height: 600px;
+    width: 1080px;
+    height: 640px;
     overflow: hidden;
     position: fixed;
     top: 50%;
@@ -22,10 +31,15 @@
     transform: translate(-50%, -50%);
     text-align: center;
     display: flex;
+    background-color: rgba(230, 230, 250, 0.5);
 }
 
 .output {
-    width: 980px;
+    font-family: Caviar_Dreams;
+    font-size: 20px;
+    font-weight: bold;
+    top: 5%;
+    width: 100%;
     height: 40px;
     position: fixed;
 }
@@ -36,33 +50,37 @@
 }
 
 .button {
+    border-radius: 5px;
+    border: 2px solid #9090e8;
+    background-color: rgba(248, 248, 255, 1);
+    font-family: Caviar_Dreams;
+    font-size: 18px;
     text-align: center;
-    width: 100px;
+    width: 120px;
     display: none;
 }
 .restart{
     width: 180px;
 }
-.hit {
-    margin-left: 7px;
-}
 
 .changeBut {
+    border-radius: 5px;
+    border: 2px solid #9090e8;
+    background-color: rgba(248, 248, 255, 1);
+    font-family: Caviar_Dreams;
+    font-size: 18px;
+    text-align: center;
+    font-size: 15px;
     width: 40px;
     height: 30px;
     margin-top: 80%;
     display: none;
 }
 
-.input {
-    width: 180px;
-    display: none;
-}
-
 .search {
     position: fixed;
     top: 90%;
-    width: 980px;
+    width: 100%;
     height: 100px;
     text-align: center;
 }

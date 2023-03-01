@@ -11,20 +11,18 @@
 
     <div class="box">
         <div id="print" class="output">Добро пожаловать в Морской бой - игры на двоих !</div>
-        <div id="first_field" class="field" onclick ="makehit();"></div>
+        <div id="first_field" class="field one" onclick ="makeHit();"></div>
         <div class="boxChangeBut">
             <input type="button" id="change" class="changeBut" value="🗘" onclick="changeField();" />
         </div>
-        <div id="second_field" class="field" onclick ="makehit();"></div>
+        <div id="second_field" class="field two" onclick ="makeHit();"></div>
 
         <div id="search" class="search" >
             <input type="button" id="start" value="Вперед" class = "button" onclick="chooseField();" />
             <input type="button" id="success" value="Подтвердить"class = "button" onclick="emptyField();" />
             <input type="button" id="ready" value="Начать игру" class = "button" onclick="startGame();" />
             <input type="button" id="restart" value="Начать новую игру" class = "button restart" onclick="restart();" />
-            <br>
-            <input type="text" id="cell" placeholder="Введите ячейку (пример: А1)" class = "input" />
-            <input type="button" id="hit" value="Выстрелить" onclick="makeHit();" class = "button hit" />
+
         </div>
     </div>
     <script type="text/javascript" src="2.js"></script>
